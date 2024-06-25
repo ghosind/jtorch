@@ -1,0 +1,39 @@
+{
+  "name": "jtorch",
+  "version": "0.0.1",
+  "description": "Node.js binding for PyTorch, Deep Learning with JavaScript. Just for fun~",
+  "main": "lib/jtorch.js",
+  "author": "Chen Su",
+  "license": "MIT",
+  "scripts": {
+    "build": "cmake-js compile",
+    "pretest": "tsc",
+    "test": "node --napi-modules ./test/test_jtorch.js"
+  },
+  "gypfile": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghosind/jtorch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ghosind/jtorch/issues"
+  },
+  "homepage": "https://github.com/ghosind/jtorch#readme",
+  "keywords": [
+    "LibTorch",
+    "PyTorch",
+    "JSTorch"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "cmake-js": "^7.3.0",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "^8.0.0"
+  },
+  "binary": {
+    "napi_version": [3]
+  }
+}
