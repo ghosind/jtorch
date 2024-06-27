@@ -1,5 +1,1 @@
-const jtorch = require('bindings')('jtorch');
-
-export = {
-  ...jtorch,
-};
+export * from './tensor'
