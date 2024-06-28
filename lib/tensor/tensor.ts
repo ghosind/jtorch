@@ -4,6 +4,7 @@ interface Tensor {
   get T(): Tensor;
 
   abs(): Tensor;
+  absolute(): Tensor;
   acos(): Tensor;
   arccos(): Tensor;
   adjoint(): Tensor;
@@ -44,6 +45,10 @@ interface Tensor {
   isposinf(): Tensor;
   isneginf(): Tensor;
   isnan(): Tensor;
+  isComplex(): boolean;
+  isConj(): boolean;
+  isFloatingPoint(): boolean;
+  isNonzero(): boolean;
   lgamma(): Tensor;
   log(): Tensor;
   logdet(): Tensor;
@@ -82,5 +87,19 @@ interface Tensor {
 }
 
 export const Tensor: {
-  new(): Tensor,
+  new(data?: Tensor): Tensor;
 } = jtorch.Tensor;
+
+export const {
+  isComplex,
+  isConj,
+  isFloatingPoint,
+  isNonzero,
+  isTensor,
+}: {
+  isComplex(v: Tensor): boolean;
+  isConj(v: Tensor): boolean;
+  isFloatingPoint(v: Tensor): boolean;
+  isNonzero(v: Tensor): boolean;
+  isTensor(v: any): boolean;
+} = jtorch;

@@ -1,9 +1,9 @@
-#include "tensor/tensor.h"
+#include "tensor/tensors.h"
 
 using namespace jtorch;
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  Tensor::Init(env, exports);
+  tensor::Init(env, exports);
 
   return exports;
 }

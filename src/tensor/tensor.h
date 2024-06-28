@@ -6,6 +6,8 @@
 
 namespace jtorch {
 
+namespace tensor {
+
 class Tensor : public Napi::ObjectWrap<Tensor> {
 public:
   static Napi::Function GetClass(Napi::Env);
@@ -13,7 +15,15 @@ public:
   static Napi::Object New(const Napi::CallbackInfo &, const torch::Tensor &);
   static Napi::Object New(Napi::Env, const torch::Tensor &);
 
+  static bool IsTensor(Napi::Env, Napi::Value);
+  static Tensor *AsTensor(Napi::Object);
+
   Tensor(const Napi::CallbackInfo &);
+
+  Napi::Value isComplex(const Napi::CallbackInfo &);
+  Napi::Value isConj(const Napi::CallbackInfo &);
+  Napi::Value isFloatingPoint(const Napi::CallbackInfo &);
+  Napi::Value isNonzero(const Napi::CallbackInfo &);
 
   torch::Tensor tensor();
 
@@ -98,4 +108,6 @@ private:
   Napi::Value values(const Napi::CallbackInfo &);
 };
 
-}
+} // namespace tensor
+
+} // namespace jtorch

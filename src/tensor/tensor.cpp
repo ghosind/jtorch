@@ -1,13 +1,17 @@
 #include "tensor.h"
+#include "utils.h"
 
 #include <torch/torch.h>
 
 namespace jtorch {
 
+namespace tensor {
+
 Napi::Function Tensor::GetClass(Napi::Env env) {
   return DefineClass(env, "Tensor", {
     InstanceAccessor<&Tensor::t>("T"),
     InstanceMethod("abs", &Tensor::abs),
+    InstanceMethod("absolute", &Tensor::abs),
     InstanceMethod("acos", &Tensor::acos),
     InstanceMethod("arccos", &Tensor::arccos),
     InstanceMethod("adjoint", &Tensor::adjoint),
@@ -48,6 +52,10 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("isposinf", &Tensor::isposinf),
     InstanceMethod("isneginf", &Tensor::isneginf),
     InstanceMethod("isnan", &Tensor::isnan),
+    InstanceMethod("isComplex", &Tensor::isComplex),
+    InstanceMethod("isConj", &Tensor::isConj),
+    InstanceMethod("isFloatingPoint", &Tensor::isFloatingPoint),
+    InstanceMethod("isNonzero", &Tensor::isNonzero),
     InstanceMethod("lgamma", &Tensor::lgamma),
     InstanceMethod("log", &Tensor::log),
     InstanceMethod("logdet", &Tensor::logdet),
@@ -119,6 +127,20 @@ Napi::Object Tensor::New(Napi::Env env, const torch::Tensor &tensor) {
   return ret;
 }
 
+bool Tensor::IsTensor(Napi::Env env, Napi::Value val) {
+  if (!val.IsObject()) {
+    return false;
+  }
+
+  Napi::FunctionReference *constructor = env.GetInstanceData<Napi::FunctionReference>();
+
+  return val.ToObject().InstanceOf(constructor->Value());
+}
+
+Tensor *Tensor::AsTensor(Napi::Object obj) {
+  return Napi::ObjectWrap<Tensor>::Unwrap(obj);
+}
+
 Tensor::Tensor(const Napi::CallbackInfo &info) : ObjectWrap(info) {
   if (info.Length() == 0) {
     tensor_ = torch::empty(0);
@@ -130,6 +152,12 @@ Tensor::Tensor(const Napi::CallbackInfo &info) : ObjectWrap(info) {
   // 2nd parameter: opts
 
   Napi::Env env = info.Env();
+  Napi::Value data = info[0];
+  if (Tensor::IsTensor(env, data)) {
+    tensor_ = Tensor::AsTensor(data.ToObject())->tensor().clone();
+    return;
+  }
+
   Napi::TypeError::New(env, "Unsupported init").ThrowAsJavaScriptException();
 }
 
@@ -342,6 +370,30 @@ Napi::Value Tensor::isnan(const Napi::CallbackInfo &info) {
   return Tensor::New(info, isnanTensor);
 }
 
+Napi::Value Tensor::isComplex(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  bool ret = tensor_.is_complex();
+  return Napi::Boolean::New(env, ret);
+}
+
+Napi::Value Tensor::isConj(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  bool ret = tensor_.is_conj();
+  return Napi::Boolean::New(env, ret);
+}
+
+Napi::Value Tensor::isFloatingPoint(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  bool ret = tensor_.is_floating_point();
+  return Napi::Boolean::New(env, ret);
+}
+
+Napi::Value Tensor::isNonzero(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  bool ret = tensor_.is_nonzero();
+  return Napi::Boolean::New(env, ret);
+}
+
 Napi::Value Tensor::lgamma(const Napi::CallbackInfo &info) {
   torch::Tensor lgammaTensor = tensor_.lgamma();
   return Tensor::New(info, lgammaTensor);
@@ -520,5 +572,7 @@ Napi::Value Tensor::values(const Napi::CallbackInfo &info) {
   torch::Tensor valuesTensor = tensor_.values();
   return Tensor::New(info, valuesTensor);
 }
+
+} // namespace tensor
 
 } // namespace jtorch
