@@ -23,9 +23,9 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("ceil", &Tensor::ceil),
     InstanceMethod("clone", &Tensor::clone),
     InstanceMethod("conj", &Tensor::conj),
-    InstanceMethod("conj_physical", &Tensor::conj_physical),
-    InstanceMethod("resolve_conj", &Tensor::resolve_conj),
-    InstanceMethod("resolve_neg", &Tensor::resolve_neg),
+    InstanceMethod("conjPhysical", &Tensor::conjPhysical),
+    InstanceMethod("resolveConj", &Tensor::resolveConj),
+    InstanceMethod("resolveNeg", &Tensor::resolveNeg),
     InstanceMethod("cos", &Tensor::cos),
     InstanceMethod("corrcoef", &Tensor::corrcoef),
     InstanceMethod("cosh", &Tensor::cosh),
@@ -45,7 +45,7 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("frac", &Tensor::frac),
     InstanceMethod("i0", &Tensor::i0),
     InstanceMethod("indices", &Tensor::indices),
-    InstanceMethod("int_repr", &Tensor::int_repr),
+    InstanceMethod("intRepr", &Tensor::intRepr),
     InstanceMethod("inverse", &Tensor::inverse),
     InstanceMethod("isfinite", &Tensor::isfinite),
     InstanceMethod("isinf", &Tensor::isinf),
@@ -65,7 +65,7 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("logit", &Tensor::logit),
     InstanceMethod("neg", &Tensor::neg),
     InstanceMethod("negative", &Tensor::negative),
-    InstanceMethod("pin_memory", &Tensor::pin_memory),
+    InstanceMethod("pinMemory", &Tensor::pinMemory),
     InstanceMethod("pinverse", &Tensor::pinverse),
     InstanceMethod("positive", &Tensor::positive),
     InstanceMethod("rad2deg", &Tensor::rad2deg),
@@ -225,17 +225,17 @@ Napi::Value Tensor::conj(const Napi::CallbackInfo &info) {
   return Tensor::New(info, conjTensor);
 }
 
-Napi::Value Tensor::conj_physical(const Napi::CallbackInfo &info) {
+Napi::Value Tensor::conjPhysical(const Napi::CallbackInfo &info) {
   torch::Tensor conjTensor = tensor_.conj_physical();
   return Tensor::New(info, conjTensor);
 }
 
-Napi::Value Tensor::resolve_conj(const Napi::CallbackInfo &info) {
+Napi::Value Tensor::resolveConj(const Napi::CallbackInfo &info) {
   torch::Tensor conjTensor = tensor_.resolve_conj();
   return Tensor::New(info, conjTensor);
 }
 
-Napi::Value Tensor::resolve_neg(const Napi::CallbackInfo &info) {
+Napi::Value Tensor::resolveNeg(const Napi::CallbackInfo &info) {
   torch::Tensor negTensor = tensor_.resolve_neg();
   return Tensor::New(info, negTensor);
 }
@@ -335,7 +335,7 @@ Napi::Value Tensor::indices(const Napi::CallbackInfo &info) {
   return Tensor::New(info, indicesTensor);
 }
 
-Napi::Value Tensor::int_repr(const Napi::CallbackInfo &info) {
+Napi::Value Tensor::intRepr(const Napi::CallbackInfo &info) {
   torch::Tensor int_reprTensor = tensor_.int_repr();
   return Tensor::New(info, int_reprTensor);
 }
@@ -439,7 +439,7 @@ Napi::Value Tensor::negative(const Napi::CallbackInfo &info) {
   return Tensor::New(info, negativeTensor);
 }
 
-Napi::Value Tensor::pin_memory(const Napi::CallbackInfo &info) {
+Napi::Value Tensor::pinMemory(const Napi::CallbackInfo &info) {
   torch::Tensor pin_memoryTensor = tensor_.pin_memory();
   return Tensor::New(info, pin_memoryTensor);
 }

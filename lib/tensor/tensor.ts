@@ -16,9 +16,9 @@ interface Tensor {
   ceil(): Tensor;
   clone(): Tensor;
   conj(): Tensor;
-  conj_physical(): Tensor;
-  resolve_conj(): Tensor;
-  resolve_neg(): Tensor;
+  conjPhysical(): Tensor;
+  resolveConj(): Tensor;
+  resolveNeg(): Tensor;
   cos(): Tensor;
   corrcoef(): Tensor;
   cosh(): Tensor;
@@ -38,7 +38,7 @@ interface Tensor {
   frac(): Tensor;
   i0(): Tensor;
   indices(): Tensor;
-  int_repr(): Tensor;
+  intRepr(): Tensor;
   inverse(): Tensor;
   isfinite(): Tensor;
   isinf(): Tensor;
@@ -58,7 +58,7 @@ interface Tensor {
   logit(): Tensor;
   neg(): Tensor;
   negative(): Tensor;
-  pin_memory(): Tensor;
+  pinMemory(): Tensor;
   pinverse(): Tensor;
   positive(): Tensor;
   rad2deg(): Tensor;

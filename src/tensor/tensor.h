@@ -42,9 +42,9 @@ private:
   Napi::Value ceil(const Napi::CallbackInfo &);
   Napi::Value clone(const Napi::CallbackInfo &);
   Napi::Value conj(const Napi::CallbackInfo &);
-  Napi::Value conj_physical(const Napi::CallbackInfo &);
-  Napi::Value resolve_conj(const Napi::CallbackInfo &);
-  Napi::Value resolve_neg(const Napi::CallbackInfo &);
+  Napi::Value conjPhysical(const Napi::CallbackInfo &);
+  Napi::Value resolveConj(const Napi::CallbackInfo &);
+  Napi::Value resolveNeg(const Napi::CallbackInfo &);
   Napi::Value cos(const Napi::CallbackInfo &);
   Napi::Value corrcoef(const Napi::CallbackInfo &);
   Napi::Value cosh(const Napi::CallbackInfo &);
@@ -64,7 +64,7 @@ private:
   Napi::Value frac(const Napi::CallbackInfo &);
   Napi::Value i0(const Napi::CallbackInfo &);
   Napi::Value indices(const Napi::CallbackInfo &);
-  Napi::Value int_repr(const Napi::CallbackInfo &);
+  Napi::Value intRepr(const Napi::CallbackInfo &);
   Napi::Value inverse(const Napi::CallbackInfo &);
   Napi::Value isfinite(const Napi::CallbackInfo &);
   Napi::Value isinf(const Napi::CallbackInfo &);
@@ -80,7 +80,7 @@ private:
   Napi::Value logit(const Napi::CallbackInfo &);
   Napi::Value neg(const Napi::CallbackInfo &);
   Napi::Value negative(const Napi::CallbackInfo &);
-  Napi::Value pin_memory(const Napi::CallbackInfo &);
+  Napi::Value pinMemory(const Napi::CallbackInfo &);
   Napi::Value pinverse(const Napi::CallbackInfo &);
   Napi::Value positive(const Napi::CallbackInfo &);
   Napi::Value rad2deg(const Napi::CallbackInfo &);
