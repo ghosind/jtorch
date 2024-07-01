@@ -14,7 +14,7 @@ Napi::Value isComplex(const Napi::CallbackInfo &info) {
   }
 
   Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->isComplex(info);
+  return tensor->is_complex(info);
 }
 
 Napi::Value isConj(const Napi::CallbackInfo &info) {
@@ -24,7 +24,7 @@ Napi::Value isConj(const Napi::CallbackInfo &info) {
   }
 
   Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->isConj(info);
+  return tensor->is_conj(info);
 }
 
 Napi::Value isFloatingPoint(const Napi::CallbackInfo &info) {
@@ -34,7 +34,7 @@ Napi::Value isFloatingPoint(const Napi::CallbackInfo &info) {
   }
 
   Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->isFloatingPoint(info);
+  return tensor->is_floating_point(info);
 }
 
 Napi::Value isNonzero(const Napi::CallbackInfo &info) {
@@ -44,7 +44,7 @@ Napi::Value isNonzero(const Napi::CallbackInfo &info) {
   }
 
   Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->isNonzero(info);
+  return tensor->is_nonzero(info);
 }
 
 Napi::Value isTensor(const Napi::CallbackInfo &info) {

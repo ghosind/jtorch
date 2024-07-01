@@ -4,6 +4,23 @@
 
 #include <torch/torch.h>
 
+#ifndef TENSOR_METHOD_TENSOR
+#define TENSOR_METHOD_TENSOR(FNAME) \
+inline Napi::Value FNAME(const Napi::CallbackInfo &info) {\
+  torch::Tensor t = tensor_.FNAME(); \
+  return Tensor::New(info, t); \
+}
+#endif // TENSOR_METHOD_TENSOR
+
+#ifndef TENSOR_METHOD_BOOL
+#define TENSOR_METHOD_BOOL(FNAME) \
+inline Napi::Value FNAME(const Napi::CallbackInfo &info) {\
+  Napi::Env env = info.Env(); \
+  bool ret = tensor_.FNAME(); \
+  return Napi::Boolean::New(env, ret); \
+}
+#endif // TENSOR_METHOD_BOOL
+
 namespace jtorch {
 
 namespace tensor {
@@ -20,92 +37,93 @@ public:
 
   Tensor(const Napi::CallbackInfo &);
 
-  Napi::Value isComplex(const Napi::CallbackInfo &);
-  Napi::Value isConj(const Napi::CallbackInfo &);
-  Napi::Value isFloatingPoint(const Napi::CallbackInfo &);
-  Napi::Value isNonzero(const Napi::CallbackInfo &);
+  TENSOR_METHOD_BOOL(is_complex)
+  TENSOR_METHOD_BOOL(is_conj)
+  TENSOR_METHOD_BOOL(is_floating_point)
+  TENSOR_METHOD_BOOL(is_nonzero)
 
   torch::Tensor tensor();
 
 private:
   torch::Tensor tensor_;
 
-  Napi::Value abs(const Napi::CallbackInfo &);
-  Napi::Value acos(const Napi::CallbackInfo &);
-  Napi::Value arccos(const Napi::CallbackInfo &);
-  Napi::Value adjoint(const Napi::CallbackInfo &);
-  Napi::Value angle(const Napi::CallbackInfo &);
-  Napi::Value asin(const Napi::CallbackInfo &);
-  Napi::Value arcsin(const Napi::CallbackInfo &);
-  Napi::Value atan(const Napi::CallbackInfo &);
-  Napi::Value arctan(const Napi::CallbackInfo &);
-  Napi::Value ceil(const Napi::CallbackInfo &);
-  Napi::Value clone(const Napi::CallbackInfo &);
-  Napi::Value conj(const Napi::CallbackInfo &);
-  Napi::Value conjPhysical(const Napi::CallbackInfo &);
-  Napi::Value resolveConj(const Napi::CallbackInfo &);
-  Napi::Value resolveNeg(const Napi::CallbackInfo &);
-  Napi::Value cos(const Napi::CallbackInfo &);
-  Napi::Value corrcoef(const Napi::CallbackInfo &);
-  Napi::Value cosh(const Napi::CallbackInfo &);
-  Napi::Value acosh(const Napi::CallbackInfo &);
-  Napi::Value arccosh(const Napi::CallbackInfo &);
-  Napi::Value det(const Napi::CallbackInfo &);
-  Napi::Value digamma(const Napi::CallbackInfo &);
-  Napi::Value erf(const Napi::CallbackInfo &);
-  Napi::Value erfc(const Napi::CallbackInfo &);
-  Napi::Value erfinv(const Napi::CallbackInfo &);
-  Napi::Value exp(const Napi::CallbackInfo &);
-  Napi::Value expm1(const Napi::CallbackInfo &);
-  Napi::Value fix(const Napi::CallbackInfo &);
-  Napi::Value fliplr(const Napi::CallbackInfo &);
-  Napi::Value flipud(const Napi::CallbackInfo &);
-  Napi::Value floor(const Napi::CallbackInfo &);
-  Napi::Value frac(const Napi::CallbackInfo &);
-  Napi::Value i0(const Napi::CallbackInfo &);
-  Napi::Value indices(const Napi::CallbackInfo &);
-  Napi::Value intRepr(const Napi::CallbackInfo &);
-  Napi::Value inverse(const Napi::CallbackInfo &);
-  Napi::Value isfinite(const Napi::CallbackInfo &);
-  Napi::Value isinf(const Napi::CallbackInfo &);
-  Napi::Value isposinf(const Napi::CallbackInfo &);
-  Napi::Value isneginf(const Napi::CallbackInfo &);
-  Napi::Value isnan(const Napi::CallbackInfo &);
-  Napi::Value lgamma(const Napi::CallbackInfo &);
-  Napi::Value log(const Napi::CallbackInfo &);
-  Napi::Value logdet(const Napi::CallbackInfo &);
-  Napi::Value log10(const Napi::CallbackInfo &);
-  Napi::Value log1p(const Napi::CallbackInfo &);
-  Napi::Value log2(const Napi::CallbackInfo &);
-  Napi::Value logit(const Napi::CallbackInfo &);
-  Napi::Value neg(const Napi::CallbackInfo &);
-  Napi::Value negative(const Napi::CallbackInfo &);
-  Napi::Value pinMemory(const Napi::CallbackInfo &);
-  Napi::Value pinverse(const Napi::CallbackInfo &);
-  Napi::Value positive(const Napi::CallbackInfo &);
-  Napi::Value rad2deg(const Napi::CallbackInfo &);
-  Napi::Value ravel(const Napi::CallbackInfo &);
-  Napi::Value reciprocal(const Napi::CallbackInfo &);
-  Napi::Value rsqrt(const Napi::CallbackInfo &);
-  Napi::Value sigmoid(const Napi::CallbackInfo &);
-  Napi::Value sign(const Napi::CallbackInfo &);
-  Napi::Value signbit(const Napi::CallbackInfo &);
-  Napi::Value sgn(const Napi::CallbackInfo &);
-  Napi::Value sin(const Napi::CallbackInfo &);
-  Napi::Value sinc(const Napi::CallbackInfo &);
-  Napi::Value sinh(const Napi::CallbackInfo &);
-  Napi::Value asinh(const Napi::CallbackInfo &);
-  Napi::Value arcsinh(const Napi::CallbackInfo &);
-  Napi::Value sqrt(const Napi::CallbackInfo &);
-  Napi::Value square(const Napi::CallbackInfo &);
-  Napi::Value t(const Napi::CallbackInfo &);
-  Napi::Value tan(const Napi::CallbackInfo &);
-  Napi::Value tanh(const Napi::CallbackInfo &);
-  Napi::Value arctanh(const Napi::CallbackInfo &);
   Napi::Value toString(const Napi::CallbackInfo &);
-  Napi::Value trace(const Napi::CallbackInfo &);
-  Napi::Value trunc(const Napi::CallbackInfo &);
-  Napi::Value values(const Napi::CallbackInfo &);
+
+  TENSOR_METHOD_TENSOR(abs)
+  TENSOR_METHOD_TENSOR(acos)
+  TENSOR_METHOD_TENSOR(arccos)
+  TENSOR_METHOD_TENSOR(adjoint)
+  TENSOR_METHOD_TENSOR(angle)
+  TENSOR_METHOD_TENSOR(asin)
+  TENSOR_METHOD_TENSOR(arcsin)
+  TENSOR_METHOD_TENSOR(atan)
+  TENSOR_METHOD_TENSOR(arctan)
+  TENSOR_METHOD_TENSOR(ceil)
+  TENSOR_METHOD_TENSOR(clone)
+  TENSOR_METHOD_TENSOR(conj)
+  TENSOR_METHOD_TENSOR(conj_physical)
+  TENSOR_METHOD_TENSOR(resolve_conj)
+  TENSOR_METHOD_TENSOR(resolve_neg)
+  TENSOR_METHOD_TENSOR(cos)
+  TENSOR_METHOD_TENSOR(corrcoef)
+  TENSOR_METHOD_TENSOR(cosh)
+  TENSOR_METHOD_TENSOR(acosh)
+  TENSOR_METHOD_TENSOR(arccosh)
+  TENSOR_METHOD_TENSOR(det)
+  TENSOR_METHOD_TENSOR(digamma)
+  TENSOR_METHOD_TENSOR(erf)
+  TENSOR_METHOD_TENSOR(erfc)
+  TENSOR_METHOD_TENSOR(erfinv)
+  TENSOR_METHOD_TENSOR(exp)
+  TENSOR_METHOD_TENSOR(expm1)
+  TENSOR_METHOD_TENSOR(fix)
+  TENSOR_METHOD_TENSOR(fliplr)
+  TENSOR_METHOD_TENSOR(flipud)
+  TENSOR_METHOD_TENSOR(floor)
+  TENSOR_METHOD_TENSOR(frac)
+  TENSOR_METHOD_TENSOR(i0)
+  TENSOR_METHOD_TENSOR(indices)
+  TENSOR_METHOD_TENSOR(int_repr)
+  TENSOR_METHOD_TENSOR(inverse)
+  TENSOR_METHOD_TENSOR(isfinite)
+  TENSOR_METHOD_TENSOR(isinf)
+  TENSOR_METHOD_TENSOR(isposinf)
+  TENSOR_METHOD_TENSOR(isneginf)
+  TENSOR_METHOD_TENSOR(isnan)
+  TENSOR_METHOD_TENSOR(lgamma)
+  TENSOR_METHOD_TENSOR(log)
+  TENSOR_METHOD_TENSOR(logdet)
+  TENSOR_METHOD_TENSOR(log10)
+  TENSOR_METHOD_TENSOR(log1p)
+  TENSOR_METHOD_TENSOR(log2)
+  TENSOR_METHOD_TENSOR(logit)
+  TENSOR_METHOD_TENSOR(neg)
+  TENSOR_METHOD_TENSOR(negative)
+  TENSOR_METHOD_TENSOR(pin_memory)
+  TENSOR_METHOD_TENSOR(pinverse)
+  TENSOR_METHOD_TENSOR(positive)
+  TENSOR_METHOD_TENSOR(rad2deg)
+  TENSOR_METHOD_TENSOR(ravel)
+  TENSOR_METHOD_TENSOR(reciprocal)
+  TENSOR_METHOD_TENSOR(rsqrt)
+  TENSOR_METHOD_TENSOR(sigmoid)
+  TENSOR_METHOD_TENSOR(sign)
+  TENSOR_METHOD_TENSOR(signbit)
+  TENSOR_METHOD_TENSOR(sgn)
+  TENSOR_METHOD_TENSOR(sin)
+  TENSOR_METHOD_TENSOR(sinc)
+  TENSOR_METHOD_TENSOR(sinh)
+  TENSOR_METHOD_TENSOR(asinh)
+  TENSOR_METHOD_TENSOR(arcsinh)
+  TENSOR_METHOD_TENSOR(sqrt)
+  TENSOR_METHOD_TENSOR(square)
+  TENSOR_METHOD_TENSOR(t)
+  TENSOR_METHOD_TENSOR(tan)
+  TENSOR_METHOD_TENSOR(tanh)
+  TENSOR_METHOD_TENSOR(arctanh)
+  TENSOR_METHOD_TENSOR(trace)
+  TENSOR_METHOD_TENSOR(trunc)
+  TENSOR_METHOD_TENSOR(values)
 };
 
 } // namespace tensor
