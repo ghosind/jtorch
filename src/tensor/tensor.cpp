@@ -33,6 +33,7 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("arccosh", &Tensor::arccosh),
     InstanceMethod("det", &Tensor::det),
     InstanceMethod("digamma", &Tensor::digamma),
+    InstanceMethod("equal", &Tensor::equal),
     InstanceMethod("erf", &Tensor::erf),
     InstanceMethod("erfc", &Tensor::erfc),
     InstanceMethod("erfinv", &Tensor::erfinv),
@@ -43,6 +44,8 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("flipud", &Tensor::flipud),
     InstanceMethod("floor", &Tensor::floor),
     InstanceMethod("frac", &Tensor::frac),
+    InstanceMethod("greater", &Tensor::greater),
+    InstanceMethod("greaterEqual", &Tensor::greater_equal),
     InstanceMethod("i0", &Tensor::i0),
     InstanceMethod("indices", &Tensor::indices),
     InstanceMethod("intRepr", &Tensor::int_repr),
@@ -56,6 +59,8 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("isConj", &Tensor::is_conj),
     InstanceMethod("isFloatingPoint", &Tensor::is_floating_point),
     InstanceMethod("isNonzero", &Tensor::is_nonzero),
+    InstanceMethod("less", &Tensor::less),
+    InstanceMethod("lessEqual", &Tensor::less_equal),
     InstanceMethod("lgamma", &Tensor::lgamma),
     InstanceMethod("log", &Tensor::log),
     InstanceMethod("logdet", &Tensor::logdet),
@@ -81,6 +86,7 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("sinh", &Tensor::sinh),
     InstanceMethod("asinh", &Tensor::asinh),
     InstanceMethod("arcsinh", &Tensor::arcsinh),
+    InstanceMethod("size", &Tensor::size),
     InstanceMethod("sqrt", &Tensor::sqrt),
     InstanceMethod("square", &Tensor::square),
     InstanceMethod("t", &Tensor::t),
@@ -163,6 +169,114 @@ Tensor::Tensor(const Napi::CallbackInfo &info) : ObjectWrap(info) {
 
 torch::Tensor Tensor::tensor() {
   return tensor_;
+}
+
+Napi::Value Tensor::equal(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1 && Tensor::IsTensor(env, info[0])) {
+    Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
+    ret = Napi::Boolean::New(env, tensor_.equal(tensor->tensor()));
+  } else {
+    Napi::TypeError::New(env, "invalid tensor").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
+}
+
+Napi::Value Tensor::greater(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1) {
+    if (info[0].IsNumber()) {
+      ret = Tensor::New(info, tensor_.greater(info[0].ToNumber().Int64Value()));
+    } else if (Tensor::IsTensor(env, info[0])) {
+      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
+      ret = Tensor::New(info, tensor_.greater(tensor->tensor()));
+    } else {
+      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    }
+  } else {
+    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
+}
+
+Napi::Value Tensor::greater_equal(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1) {
+    if (info[0].IsNumber()) {
+      ret = Tensor::New(info, tensor_.greater_equal(info[0].ToNumber().Int64Value()));
+    } else if (Tensor::IsTensor(env, info[0])) {
+      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
+      ret = Tensor::New(info, tensor_.greater_equal(tensor->tensor()));
+    } else {
+      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    }
+  } else {
+    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
+}
+
+Napi::Value Tensor::less(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1) {
+    if (info[0].IsNumber()) {
+      ret = Tensor::New(info, tensor_.less(info[0].ToNumber().Int64Value()));
+    } else if (Tensor::IsTensor(env, info[0])) {
+      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
+      ret = Tensor::New(info, tensor_.less(tensor->tensor()));
+    } else {
+      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    }
+  } else {
+    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
+}
+
+Napi::Value Tensor::less_equal(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1) {
+    if (info[0].IsNumber()) {
+      ret = Tensor::New(info, tensor_.less_equal(info[0].ToNumber().Int64Value()));
+    } else if (Tensor::IsTensor(env, info[0])) {
+      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
+      ret = Tensor::New(info, tensor_.less_equal(tensor->tensor()));
+    } else {
+      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    }
+  } else {
+    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
+}
+
+Napi::Value Tensor::size(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  Napi::Value ret;
+
+  if (info.Length() == 1 && info[0].IsNumber()) {
+    auto size = tensor_.size(info[0].ToNumber().Int64Value());
+    ret = Napi::Number::New(env, double(size));
+  } else {
+    Napi::TypeError::New(env, "invalid dim").ThrowAsJavaScriptException();
+  }
+  
+  return ret;
 }
 
 Napi::Value Tensor::toString(const Napi::CallbackInfo &info) {

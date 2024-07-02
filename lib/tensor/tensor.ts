@@ -26,11 +26,14 @@ interface Tensor {
   arccosh(): Tensor;
   det(): Tensor;
   digamma(): Tensor;
+  equal(tensor: Tensor): boolean;
   erf(): Tensor;
   erfc(): Tensor;
   erfinv(): Tensor;
   exp(): Tensor;
   expm1(): Tensor;
+  greater(other: Tensor | number): Tensor;
+  greaterEqual(other: Tensor | number): Tensor;
   fix(): Tensor;
   fliplr(): Tensor;
   flipud(): Tensor;
@@ -49,6 +52,8 @@ interface Tensor {
   isConj(): boolean;
   isFloatingPoint(): boolean;
   isNonzero(): boolean;
+  less(other: Tensor | number): Tensor;
+  lessEqual(other: Tensor | number): Tensor;
   lgamma(): Tensor;
   log(): Tensor;
   logdet(): Tensor;
@@ -74,6 +79,7 @@ interface Tensor {
   sinh(): Tensor;
   asinh(): Tensor;
   arcsinh(): Tensor;
+  size(dim: number): number;
   sqrt(): Tensor;
   square(): Tensor;
   t(): Tensor;

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <napi.h>
+#include "utils.h"
 
+#include <napi.h>
 #include <torch/torch.h>
 
 #ifndef TENSOR_METHOD_TENSOR
+// Tensor Tensor::FNAME(void);
 #define TENSOR_METHOD_TENSOR(FNAME) \
 inline Napi::Value FNAME(const Napi::CallbackInfo &info) {\
   torch::Tensor t = tensor_.FNAME(); \
@@ -13,6 +15,7 @@ inline Napi::Value FNAME(const Napi::CallbackInfo &info) {\
 #endif // TENSOR_METHOD_TENSOR
 
 #ifndef TENSOR_METHOD_BOOL
+// bool Tensor::FNAME(void);
 #define TENSOR_METHOD_BOOL(FNAME) \
 inline Napi::Value FNAME(const Napi::CallbackInfo &info) {\
   Napi::Env env = info.Env(); \
@@ -47,6 +50,12 @@ public:
 private:
   torch::Tensor tensor_;
 
+  Napi::Value equal(const Napi::CallbackInfo &);
+  Napi::Value greater(const Napi::CallbackInfo &);
+  Napi::Value greater_equal(const Napi::CallbackInfo &);
+  Napi::Value less(const Napi::CallbackInfo &);
+  Napi::Value less_equal(const Napi::CallbackInfo &);
+  Napi::Value size(const Napi::CallbackInfo &);
   Napi::Value toString(const Napi::CallbackInfo &);
 
   TENSOR_METHOD_TENSOR(abs)
