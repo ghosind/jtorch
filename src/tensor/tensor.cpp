@@ -191,7 +191,7 @@ Napi::Value Tensor::greater(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.greater(info[0].ToNumber().Int64Value()));
+      ret = Tensor::New(info, tensor_.greater(info[0].ToNumber().DoubleValue()));
     } else if (Tensor::IsTensor(env, info[0])) {
       Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
       ret = Tensor::New(info, tensor_.greater(tensor->tensor()));
@@ -211,7 +211,7 @@ Napi::Value Tensor::greater_equal(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.greater_equal(info[0].ToNumber().Int64Value()));
+      ret = Tensor::New(info, tensor_.greater_equal(info[0].ToNumber().DoubleValue()));
     } else if (Tensor::IsTensor(env, info[0])) {
       Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
       ret = Tensor::New(info, tensor_.greater_equal(tensor->tensor()));
@@ -231,7 +231,7 @@ Napi::Value Tensor::less(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.less(info[0].ToNumber().Int64Value()));
+      ret = Tensor::New(info, tensor_.less(info[0].ToNumber().DoubleValue()));
     } else if (Tensor::IsTensor(env, info[0])) {
       Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
       ret = Tensor::New(info, tensor_.less(tensor->tensor()));
@@ -251,7 +251,7 @@ Napi::Value Tensor::less_equal(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.less_equal(info[0].ToNumber().Int64Value()));
+      ret = Tensor::New(info, tensor_.less_equal(info[0].ToNumber().DoubleValue()));
     } else if (Tensor::IsTensor(env, info[0])) {
       Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
       ret = Tensor::New(info, tensor_.less_equal(tensor->tensor()));
