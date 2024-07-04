@@ -2,13 +2,13 @@
   "name": "jtorch",
   "version": "0.0.1",
   "description": "Node.js binding for PyTorch, Deep Learning with JavaScript. Just for fun~",
-  "main": "lib/jtorch.js",
+  "main": "dist/jtorch.js",
   "author": "Chen Su",
   "license": "MIT",
   "scripts": {
     "build": "cmake-js compile",
     "pretest": "tsc",
-    "test": "node --napi-modules ./test/test_jtorch.js"
+    "test": "ts-node ./test/test_jtorch.spec.ts"
   },
   "repository": {
     "type": "git",
