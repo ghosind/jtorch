@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include "../node_api.h"
 
 #include <napi.h>
 
@@ -10,12 +11,10 @@ bool validateTensorParam(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
   if (info.Length() == 0) {
-    Napi::TypeError::New(env, "missing 1 required positional argument")
-      .ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "missing 1 required positional argument");
     return false;
   } else if (!Tensor::IsTensor(env, info[0])) {
-    Napi::TypeError::New(env, "argument must be Tensor")
-      .ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "argument must be Tensor");
     return false;
   }
 

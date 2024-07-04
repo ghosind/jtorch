@@ -1,5 +1,6 @@
 #include "tensor.h"
 #include "utils.h"
+#include "../node_api.h"
 
 #include <torch/torch.h>
 
@@ -57,8 +58,11 @@ Napi::Function Tensor::GetClass(Napi::Env env) {
     InstanceMethod("isnan", &Tensor::isnan),
     InstanceMethod("isComplex", &Tensor::is_complex),
     InstanceMethod("isConj", &Tensor::is_conj),
+    InstanceMethod("isCuda", &Tensor::is_cuda),
     InstanceMethod("isFloatingPoint", &Tensor::is_floating_point),
+    InstanceMethod("isMeta", &Tensor::is_meta),
     InstanceMethod("isNonzero", &Tensor::is_nonzero),
+    InstanceMethod("isQuantized", &Tensor::is_quantized),
     InstanceMethod("less", &Tensor::less),
     InstanceMethod("lessEqual", &Tensor::less_equal),
     InstanceMethod("lgamma", &Tensor::lgamma),
@@ -160,11 +164,11 @@ Tensor::Tensor(const Napi::CallbackInfo &info) : ObjectWrap(info) {
   Napi::Env env = info.Env();
   Napi::Value data = info[0];
   if (Tensor::IsTensor(env, data)) {
-    tensor_ = Tensor::AsTensor(data.ToObject())->tensor().clone();
+    tensor_ = TENSOR_VALUE(data)->tensor().clone();
     return;
   }
 
-  Napi::TypeError::New(env, "Unsupported init").ThrowAsJavaScriptException();
+  THROW_TYPE_ERROR(env, "Unsupported init");
 }
 
 torch::Tensor Tensor::tensor() {
@@ -176,12 +180,11 @@ Napi::Value Tensor::equal(const Napi::CallbackInfo &info) {
   Napi::Value ret;
 
   if (info.Length() == 1 && Tensor::IsTensor(env, info[0])) {
-    Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-    ret = Napi::Boolean::New(env, tensor_.equal(tensor->tensor()));
+    ret = Napi::Boolean::New(env, tensor_.equal(TENSOR_VALUE(info[0])->tensor()));
   } else {
-    Napi::TypeError::New(env, "invalid tensor").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid tensor");
   }
-  
+
   return ret;
 }
 
@@ -191,17 +194,16 @@ Napi::Value Tensor::greater(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.greater(info[0].ToNumber().DoubleValue()));
+      ret = Tensor::New(info, tensor_.greater(DOUBLE_VALUE(info[0])));
     } else if (Tensor::IsTensor(env, info[0])) {
-      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-      ret = Tensor::New(info, tensor_.greater(tensor->tensor()));
+      ret = Tensor::New(info, tensor_.greater(TENSOR_VALUE(info[0])->tensor()));
     } else {
-      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+      THROW_TYPE_ERROR(env, "Invalid argument");
     }
   } else {
-    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid argument");
   }
-  
+
   return ret;
 }
 
@@ -211,17 +213,16 @@ Napi::Value Tensor::greater_equal(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.greater_equal(info[0].ToNumber().DoubleValue()));
+      ret = Tensor::New(info, tensor_.greater_equal(DOUBLE_VALUE(info[0])));
     } else if (Tensor::IsTensor(env, info[0])) {
-      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-      ret = Tensor::New(info, tensor_.greater_equal(tensor->tensor()));
+      ret = Tensor::New(info, tensor_.greater_equal(TENSOR_VALUE(info[0])->tensor()));
     } else {
-      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+      THROW_TYPE_ERROR(env, "Invalid argument");
     }
   } else {
-    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid argument");
   }
-  
+
   return ret;
 }
 
@@ -231,17 +232,16 @@ Napi::Value Tensor::less(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.less(info[0].ToNumber().DoubleValue()));
+      ret = Tensor::New(info, tensor_.less(DOUBLE_VALUE(info[0])));
     } else if (Tensor::IsTensor(env, info[0])) {
-      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-      ret = Tensor::New(info, tensor_.less(tensor->tensor()));
+      ret = Tensor::New(info, tensor_.less(TENSOR_VALUE(info[0])->tensor()));
     } else {
-      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+      THROW_TYPE_ERROR(env, "Invalid argument");
     }
   } else {
-    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid argument");
   }
-  
+
   return ret;
 }
 
@@ -251,17 +251,16 @@ Napi::Value Tensor::less_equal(const Napi::CallbackInfo &info) {
 
   if (info.Length() == 1) {
     if (info[0].IsNumber()) {
-      ret = Tensor::New(info, tensor_.less_equal(info[0].ToNumber().DoubleValue()));
+      ret = Tensor::New(info, tensor_.less_equal(DOUBLE_VALUE(info[0])));
     } else if (Tensor::IsTensor(env, info[0])) {
-      Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-      ret = Tensor::New(info, tensor_.less_equal(tensor->tensor()));
+      ret = Tensor::New(info, tensor_.less_equal(TENSOR_VALUE(info[0])->tensor()));
     } else {
-      Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+      THROW_TYPE_ERROR(env, "Invalid argument");
     }
   } else {
-    Napi::TypeError::New(env, "invalid other").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid argument");
   }
-  
+
   return ret;
 }
 
@@ -270,12 +269,12 @@ Napi::Value Tensor::size(const Napi::CallbackInfo &info) {
   Napi::Value ret;
 
   if (info.Length() == 1 && info[0].IsNumber()) {
-    auto size = tensor_.size(info[0].ToNumber().Int64Value());
+    auto size = tensor_.size(INT64_VALUE(info[0]));
     ret = Napi::Number::New(env, double(size));
   } else {
-    Napi::TypeError::New(env, "invalid dim").ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "Invalid dim");
   }
-  
+
   return ret;
 }
 

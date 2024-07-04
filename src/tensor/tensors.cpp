@@ -1,5 +1,6 @@
 #include "tensor.h"
 #include "utils.h"
+#include "../node_api.h"
 
 #include <napi.h>
 
@@ -13,8 +14,7 @@ Napi::Value isComplex(const Napi::CallbackInfo &info) {
     return ret;
   }
 
-  Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->is_complex(info);
+  return TENSOR_VALUE(info[0])->is_complex(info);
 }
 
 Napi::Value isConj(const Napi::CallbackInfo &info) {
@@ -23,8 +23,7 @@ Napi::Value isConj(const Napi::CallbackInfo &info) {
     return ret;
   }
 
-  Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->is_conj(info);
+  return TENSOR_VALUE(info[0])->is_conj(info);
 }
 
 Napi::Value isFloatingPoint(const Napi::CallbackInfo &info) {
@@ -33,8 +32,7 @@ Napi::Value isFloatingPoint(const Napi::CallbackInfo &info) {
     return ret;
   }
 
-  Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->is_floating_point(info);
+  return TENSOR_VALUE(info[0])->is_floating_point(info);
 }
 
 Napi::Value isNonzero(const Napi::CallbackInfo &info) {
@@ -43,8 +41,7 @@ Napi::Value isNonzero(const Napi::CallbackInfo &info) {
     return ret;
   }
 
-  Tensor *tensor = Tensor::AsTensor(info[0].ToObject());
-  return tensor->is_nonzero(info);
+  return TENSOR_VALUE(info[0])->is_nonzero(info);
 }
 
 Napi::Value isTensor(const Napi::CallbackInfo &info) {
@@ -52,8 +49,7 @@ Napi::Value isTensor(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
   if (info.Length() == 0) {
-    Napi::TypeError::New(env, "missing 1 required positional argument")
-      .ThrowAsJavaScriptException();
+    THROW_TYPE_ERROR(env, "missing 1 required positional argument");
     return ret;
   }
 

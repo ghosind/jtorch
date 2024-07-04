@@ -40,6 +40,9 @@ public:
 
   Tensor(const Napi::CallbackInfo &);
 
+  TENSOR_METHOD_BOOL(is_cuda)
+  TENSOR_METHOD_BOOL(is_quantized)
+  TENSOR_METHOD_BOOL(is_meta)
   TENSOR_METHOD_BOOL(is_complex)
   TENSOR_METHOD_BOOL(is_conj)
   TENSOR_METHOD_BOOL(is_floating_point)
