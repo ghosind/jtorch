@@ -1,6 +1,8 @@
+import { TensorOptions } from './tensorOptions';
+
 const jtorch = require('bindings')('jtorch');
 
-interface Tensor {
+export interface Tensor {
   get T(): Tensor;
 
   abs(): Tensor;
@@ -95,6 +97,14 @@ interface Tensor {
 export const Tensor: {
   new(data?: Tensor): Tensor;
 } = jtorch.Tensor;
+
+export const {
+  arange,
+}: {
+  arange(end: number, options?: TensorOptions): Tensor;
+  arange(start: number, end: number, options?: TensorOptions): Tensor;
+  arange(start: number, end: number, step: number, options?: TensorOptions): Tensor;
+} = jtorch;
 
 export const {
   isComplex,

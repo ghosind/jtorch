@@ -7,6 +7,21 @@ namespace jtorch {
 
 namespace tensor {
 
+torch::TensorOptions parseTensorOptions(Napi::Value val) {
+  torch::TensorOptions options = torch::TensorOptions();
+  if (!val.IsObject()) {
+    return options;
+  }
+
+  Napi::Object opts = val.ToObject();
+
+  if (opts.Has("requiresGrad") && opts.Get("requiresGrad").IsBoolean()) {
+    options = options.requires_grad(BOOLEAN_VALUE(opts.Get("requiresGrad")));
+  }
+
+  return options;
+}
+
 bool validateTensorParam(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 

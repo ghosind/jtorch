@@ -1,3 +1,4 @@
+#include "creation.h"
 #include "tensor.h"
 #include "utils.h"
 #include "../node_api.h"
@@ -59,6 +60,8 @@ Napi::Value isTensor(const Napi::CallbackInfo &info) {
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Tensor::Init(env, exports);
+
+  exports.Set(Napi::String::New(env, "arange"), Napi::Function::New(env, arange));
 
   exports.Set(Napi::String::New(env, "isComplex"), Napi::Function::New(env, isComplex));
   exports.Set(Napi::String::New(env, "isConj"), Napi::Function::New(env, isConj));
