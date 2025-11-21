@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.os == 'Windows' && '${{ env.USERPROFILE }}\\.npm' || '~/.npm' }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install platform packages (Linux/macOS/Windows)
+        if: startsWith(matrix.os, 'ubuntu') || matrix.os == 'macos-latest' || matrix.os == 'windows-latest'
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            sudo apt-get update && sudo apt-get install -y cmake build-essential unzip curl
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            brew update || true
+            brew install cmake unzip curl || true
+          else
+            choco install -y cmake 7zip curl || true
+          fi
+
+      - name: Restore libtorch cache
+        id: cache-libtorch
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/libtorch-${{ matrix.os }}
+          key: libtorch-${{ matrix.os }}-v1
+
+      - name: Download and extract LibTorch (if cache miss) - Linux
+        if: steps.cache-libtorch.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
+        run: |
+          echo "Downloading LibTorch for Linux..."
+          curl -L -o libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-latest.zip
+          unzip libtorch.zip -d ${{ runner.temp }}
+          mv ${RUNNER_TEMP:-${{ runner.temp }}}/libtorch* ${{ runner.temp }}/libtorch-${{ matrix.os }} || true
+
+      - name: Download and extract LibTorch (if cache miss) - macOS
+        if: steps.cache-libtorch.outputs.cache-hit != 'true' && matrix.os == 'macos-latest'
+        env:
+          LIBTORCH_URL: ${{ secrets.LIBTORCH_URL }}
+        run: |
+          if [ -n "$LIBTORCH_URL" ]; then
+            url="$LIBTORCH_URL"
+          else
+            url="https://download.pytorch.org/libtorch/cpu/libtorch-macos-latest.zip"
+          fi
+          echo "Downloading LibTorch for macOS from $url"
+          curl -L -o libtorch_macos.zip "$url"
+          unzip libtorch_macos.zip -d ${{ runner.temp }} || true
+          mv ${RUNNER_TEMP:-${{ runner.temp }}}/libtorch* ${{ runner.temp }}/libtorch-${{ matrix.os }} || true
+
+      - name: Download and extract LibTorch (if cache miss) - Windows
+        if: steps.cache-libtorch.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $url = 'https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-latest.zip'
+          Write-Host "Downloading LibTorch for Windows from $url"
+          Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\libtorch_win.zip"
+          Expand-Archive -Path "$env:TEMP\libtorch_win.zip" -DestinationPath $env:TEMP -Force
+          Move-Item -Path (Join-Path $env:TEMP 'libtorch*') -Destination (Join-Path $env:TEMP 'libtorch-${{ matrix.os }}') -Force -ErrorAction SilentlyContinue
+
+      - name: List LibTorch
+        run: |
+          echo "Listing libtorch at ${{ runner.temp }}/libtorch-${{ matrix.os }}"
+          ls -la ${{ runner.temp }}/libtorch-${{ matrix.os }} || true
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build native addon
+        env:
+          Torch_DIR: ${{ runner.temp }}/libtorch-${{ matrix.os }}/share/cmake/Torch
+          CMAKE_PREFIX_PATH: ${{ runner.temp }}/libtorch-${{ matrix.os }}
+        run: |
+          echo "Torch_DIR=${{ runner.temp }}/libtorch-${{ matrix.os }}/share/cmake/Torch"
+          export Torch_DIR=${{ runner.temp }}/libtorch-${{ matrix.os }}/share/cmake/Torch || true
+          export CMAKE_PREFIX_PATH=${{ runner.temp }}/libtorch-${{ matrix.os }} || true
+          npm run build
+
+      - name: Run tests
+        run: npm test
