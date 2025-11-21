@@ -8,7 +8,7 @@
   "scripts": {
     "build": "cmake-js compile",
     "pretest": "tsc",
-    "test": "ts-node ./test/test_jtorch.spec.ts"
+    "test": "mocha -r ts-node/register \"test/**/*.spec.ts\""
   },
   "repository": {
     "type": "git",
@@ -24,8 +24,10 @@
     "JSTorch"
   ],
   "devDependencies": {
+    "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.8",
+    "chai": "^6.2.1",
     "cmake-js": "^7.3.0",
     "eslint": "^9.5.0",
     "mocha": "^10.5.1",
